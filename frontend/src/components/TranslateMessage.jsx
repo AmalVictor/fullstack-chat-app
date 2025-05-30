@@ -21,7 +21,7 @@ const TranslateMessage = ({ original }) => {
                         targetLang: preferredLanguage,
                       });
   
-      const data = await response.json();
+      const data = response.data;
   
       if (response.ok) {
         setTranslated(data.translated);
