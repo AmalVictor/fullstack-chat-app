@@ -23,7 +23,7 @@ const TranslateMessage = ({ original }) => {
   
       const data = response.data;
   
-      if (response.ok) {
+      if (data.translated) {
         setTranslated(data.translated);
         setRetryCount(0); // Reset retry count on success
         console.log("Translation successful");
