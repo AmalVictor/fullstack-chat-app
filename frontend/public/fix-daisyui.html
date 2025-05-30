@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fix DaisyUI Variables</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.css" rel="stylesheet" type="text/css" />
+  <style>
+    /* Essential DaisyUI theme variables */
+    [data-theme="light"] {
+      --p: 259 94% 51%;
+      --pf: 259 94% 41%;
+      --pc: 0 0% 100%;
+      --s: 314 100% 47%;
+      --sc: 0 0% 100%;
+      --a: 174 60% 51%;
+      --ac: 0 0% 100%;
+      --n: 219 14% 28%;
+      --nc: 0 0% 100%;
+      --b1: 0 0% 100%;
+      --b2: 0 0% 95%;
+      --bc: 0 0% 20%;
+    }
+    
+    [data-theme="dark"] {
+      --p: 262 80% 50%;
+      --pc: 210 20% 98%;
+      --s: 316 70% 50%;
+      --sc: 210 20% 98%;
+      --a: 175 70% 41%;
+      --ac: 210 20% 98%;
+      --n: 218 18% 12%;
+      --nc: 210 20% 98%;
+      --b1: 220 18% 20%;
+      --b2: 220 18% 17%;
+      --bc: 220 18% 80%;
+    }
+    
+    /* Force theme buttons to have colors */
+    .btn-primary {
+      background-color: hsl(var(--p)) !important;
+      color: hsl(var(--pc)) !important;
+    }
+    
+    .btn-secondary {
+      background-color: hsl(var(--s)) !important;
+      color: hsl(var(--sc)) !important;
+    }
+    
+    .btn-accent {
+      background-color: hsl(var(--a)) !important;
+      color: hsl(var(--ac)) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mx-auto p-8" id="app">
+    <h1 class="text-3xl font-bold mb-4">DaisyUI Theme Fix Tool</h1>
+    
+    <div class="alert alert-info mb-6">
+      <p>This page will help you fix DaisyUI theme loading issues.</p>
+    </div>
+    
+    <div class="mb-8">
+      <h2 class="text-xl font-bold mb-2">Current Status</h2>
+      <div class="stats shadow">
+        <div class="stat">
+          <div class="stat-title">Current Theme</div>
+          <div class="stat-value" id="currentTheme">-</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">--p Variable</div>
+          <div class="stat-value" id="pVariable">-</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h2 class="card-title">1. Test Themes</h2>
+          <p>Click buttons below to test if DaisyUI themes can be applied:</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <button class="btn btn-sm" onclick="setTheme('light')">Light</button>
+            <button class="btn btn-sm" onclick="setTheme('dark')">Dark</button>
+            <button class="btn btn-sm" onclick="setTheme('cupcake')">Cupcake</button>
+            <button class="btn btn-sm" onclick="setTheme('coffee')">Coffee</button>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <button class="btn btn-primary">Primary</button>
+            <button class="btn btn-secondary">Secondary</button>
+            <button class="btn btn-accent">Accent</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card bg-base-200 shadow-lg">
+        <div class="card-body">
+          <h2 class="card-title">2. Fix Steps</h2>
+          <ol class="list-decimal list-inside space-y-2">
+            <li>Run <code class="bg-base-300 px-1 rounded">clean-install.bat</code> script</li>
+            <li>Clear browser cache completely</li>
+            <li>Try using a different browser</li>
+            <li>Check if DaisyUI 4.7.2 is installed</li>
+            <li>Check Tailwind configuration files</li>
+          </ol>
+          <div class="card-actions justify-end mt-4">
+            <button class="btn btn-primary" onclick="fixThemes()">Apply Manual Fix</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="collapse collapse-plus bg-base-200">
+      <input type="checkbox" /> 
+      <div class="collapse-title text-xl font-medium">
+        CSS Variables Diagnostics
+      </div>
+      <div class="collapse-content"> 
+        <div class="bg-base-300 p-4 rounded-lg">
+          <pre id="cssVariables" class="whitespace-pre-wrap text-sm"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      checkDaisyUI();
+      
+      // Apply theme from localStorage
+      const savedTheme = localStorage.getItem('chat-theme');
+      if (savedTheme) {
+        setTheme(savedTheme);
+      } else {
+        setTheme('light');
+      }
+    });
+    
+    // Check DaisyUI variables
+    function checkDaisyUI() {
+      const style = window.getComputedStyle(document.documentElement);
+      const pValue = style.getPropertyValue('--p').trim();
+      
+      document.getElementById('pVariable').textContent = pValue || 'Not found';
+      
+      // Get all CSS variables
+      let cssVars = [];
+      for (let i = 0; i < style.length; i++) {
+        const prop = style[i];
+        if (prop.startsWith('--')) {
+          cssVars.push(`${prop}: ${style.getPropertyValue(prop)}`);
+        }
+      }
+      
+      // Display in pre
+      document.getElementById('cssVariables').textContent = cssVars.join('\n');
+    }
+    
+    // Set theme
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('chat-theme', theme);
+      
+      document.getElementById('currentTheme').textContent = theme;
+      
+      // Check again after theme change
+      setTimeout(checkDaisyUI, 100);
+    }
+    
+    // Apply manual fix
+    function fixThemes() {
+      // Add inline styles with theme definitions
+      const styleEl = document.createElement('style');
+      styleEl.textContent = `
+        [data-theme="light"] {
+          --p: 259 94% 51%;
+          --pf: 259 94% 41%;
+          --pc: 0 0% 100%;
+          --s: 314 100% 47%;
+          --sc: 0 0% 100%;
+          --a: 174 60% 51%;
+          --ac: 0 0% 100%;
+          --b1: 0 0% 100%;
+          --b2: 0 0% 95%;
+          --bc: 0 0% 20%;
+        }
+        
+        [data-theme="dark"] {
+          --p: 262 80% 50%;
+          --pc: 210 20% 98%;
+          --s: 316 70% 50%;
+          --sc: 210 20% 98%;
+          --a: 175 70% 41%;
+          --ac: 210 20% 98%;
+          --b1: 220 18% 20%;
+          --b2: 220 18% 17%;
+          --bc: 220 18% 80%;
+        }
+        
+        [data-theme="coffee"] {
+          --p: 30 67% 58%;
+          --pc: 30 25% 12%;
+          --s: 38 55% 36%;
+          --sc: 30 20% 96%;
+          --a: 28 100% 72%;
+          --ac: 30 25% 12%;
+          --b1: 30 20% 96%;
+          --b2: 30 25% 90%;
+          --bc: 30 25% 12%;
+        }
+      `;
+      
+      document.head.appendChild(styleEl);
+      
+      // Reapply current theme
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      setTheme(currentTheme);
+      
+      alert('Manual fix applied! Theme variables have been directly injected.');
+    }
+  </script>
+</body>
+</html> 

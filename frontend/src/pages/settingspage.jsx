@@ -1,14 +1,42 @@
 import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore.js";
-import { Send } from "lucide-react";
+import { Send, Globe } from "lucide-react";
+import { useLanguage } from '../context/LanguageContext.jsx'
 
 const PREVIEW_MESSAGES = [
   { id: 1, content: "Hey! How's it going?", isSent: false },
   { id: 2, content: "I'm doing great! Just working on some new features.", isSent: true },
 ];
 
+// LibreTranslate supported languages (https://libretranslate.com/languages)
+const LANGUAGES = [
+  { code: 'en', name: 'English' },
+  { code: 'ar', name: 'العربية (Arabic)' },
+  { code: 'zh', name: '中文 (Chinese)' },
+  { code: 'nl', name: 'Nederlands (Dutch)' },
+  { code: 'fi', name: 'Suomi (Finnish)' },
+  { code: 'fr', name: 'Français (French)' },
+  { code: 'de', name: 'Deutsch (German)' },
+  { code: 'hi', name: 'हिन्दी (Hindi)' },
+  { code: 'hu', name: 'Magyar (Hungarian)' },
+  { code: 'id', name: 'Bahasa Indonesia (Indonesian)' },
+  { code: 'ga', name: 'Gaeilge (Irish)' },
+  { code: 'it', name: 'Italiano (Italian)' },
+  { code: 'ja', name: '日本語 (Japanese)' },
+  { code: 'ko', name: '한국어 (Korean)' },
+  { code: 'pl', name: 'Polski (Polish)' },
+  { code: 'pt', name: 'Português (Portuguese)' },
+  { code: 'ru', name: 'Русский (Russian)' },
+  { code: 'es', name: 'Español (Spanish)' },
+  { code: 'sv', name: 'Svenska (Swedish)' },
+  { code: 'tr', name: 'Türkçe (Turkish)' },
+  { code: 'uk', name: 'Українська (Ukrainian)' },
+  { code: 'vi', name: 'Tiếng Việt (Vietnamese)' },
+];
+
 const SettingsPage = () => {
   const { theme, setTheme } = useThemeStore();
+  const { preferredLanguage, setPreferredLanguage } = useLanguage();
 
   return (
     <div className="h-screen container mx-auto px-4 pt-20 max-w-5xl">
@@ -43,8 +71,35 @@ const SettingsPage = () => {
           ))}
         </div>
 
+        <div className="flex flex-col gap-1 mt-8">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Globe size={20} className="text-primary" /> 
+            Translation Language
+          </h2>
+          <p className="text-sm text-base-content/70">
+            Choose your preferred language for message translations
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.code}
+              className={`
+                px-3 py-2 rounded-lg border text-left transition-colors
+                ${preferredLanguage === lang.code 
+                  ? "bg-primary text-primary-content border-primary" 
+                  : "bg-base-100 hover:bg-base-200 border-base-300"}
+              `}
+              onClick={() => setPreferredLanguage(lang.code)}
+            >
+              <div className="font-medium">{lang.name}</div>
+            </button>
+          ))}
+        </div>
+
         {/* Preview Section */}
-        <h3 className="text-lg font-semibold mb-3">Preview</h3>
+        <h3 className="text-lg font-semibold mb-3 mt-8">Preview</h3>
         <div className="rounded-xl border border-base-300 overflow-hidden bg-base-100 shadow-lg">
           <div className="p-4 bg-base-200">
             <div className="max-w-lg mx-auto">
@@ -77,6 +132,11 @@ const SettingsPage = () => {
                         `}
                       >
                         <p className="text-sm">{message.content}</p>
+                        {!message.isSent && (
+                          <div className="mt-1">
+                            <button className="text-[10px] text-blue-500 underline">Translate</button>
+                          </div>
+                        )}
                         <p
                           className={`
                             text-[10px] mt-1.5

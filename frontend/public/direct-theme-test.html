@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct DaisyUI Theme Test</title>
+  <!-- Import theme reset CSS -->
+  <link rel="stylesheet" href="/theme-reset.css">
+  <!-- Import Tailwind CSS directly -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Add additional styles for testing */
+    .theme-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      margin: 4px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="p-8">
+  <div class="container mx-auto">
+    <h1 class="text-2xl font-bold mb-4">Direct DaisyUI Theme Test</h1>
+    <p class="mb-4">This is a standalone test page that loads DaisyUI directly without React.</p>
+    
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button onclick="showThemeStatus()" class="btn btn-primary">Show Theme Status</button>
+      <button onclick="resetTheme()" class="btn btn-warning">Reset Theme</button>
+    </div>
+    
+    <div class="divider">Theme Buttons</div>
+    
+    <div class="flex flex-wrap gap-2 mb-8" id="themeButtons">
+      <!-- Will be filled with theme buttons -->
+    </div>
+    
+    <div class="divider">Current Theme Preview</div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div class="card bg-base-100 shadow-lg">
+        <div class="card-body">
+          <h2 class="card-title">Current Theme</h2>
+          <p>This card shows the current theme colors.</p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <button class="btn btn-primary">Primary</button>
+            <button class="btn btn-secondary">Secondary</button>
+            <button class="btn btn-accent">Accent</button>
+            <button class="btn btn-neutral">Neutral</button>
+            <button class="btn btn-ghost">Ghost</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card bg-base-200 shadow-lg">
+        <div class="card-body">
+          <h2 class="card-title">Theme Information</h2>
+          <div>
+            <p>Current theme: <span id="currentTheme" class="font-bold"></span></p>
+            <p class="mt-2">DaisyUI CSS Variables:</p>
+            <div class="grid grid-cols-4 gap-2 mt-2">
+              <div class="h-8 w-full bg-primary rounded-md"></div>
+              <div class="h-8 w-full bg-secondary rounded-md"></div>
+              <div class="h-8 w-full bg-accent rounded-md"></div>
+              <div class="h-8 w-full bg-neutral rounded-md"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-8">
+      <h2 class="text-xl font-bold mb-4">CSS Variables Testing</h2>
+      <div class="card bg-base-200 p-4">
+        <div id="cssVariables" class="text-sm overflow-auto max-h-60 font-mono"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // List of themes
+    const themes = [
+      "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", 
+      "synthwave", "retro", "cyberpunk", "valentine", "halloween", 
+      "garden", "forest", "aqua", "lofi", "pastel", "fantasy", 
+      "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", 
+      "business", "acid", "lemonade", "night", "coffee", "winter"
+    ];
+    
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeThemeTest();
+    });
+    
+    function initializeThemeTest() {
+      try {
+        // Create theme buttons
+        const themeButtonsContainer = document.getElementById('themeButtons');
+        if (themeButtonsContainer) {
+          themes.forEach(theme => {
+            const button = document.createElement('button');
+            button.textContent = theme;
+            button.className = 'btn btn-sm';
+            button.onclick = () => applyTheme(theme);
+            themeButtonsContainer.appendChild(button);
+          });
+        }
+        
+        // Display CSS variables
+        displayCSSVariables();
+        
+        // Initialize with saved theme
+        const savedTheme = localStorage.getItem('chat-theme');
+        if (savedTheme) {
+          applyTheme(savedTheme);
+        } else {
+          applyTheme('light');
+        }
+      } catch (error) {
+        console.error('Error initializing theme test:', error);
+      }
+    }
+    
+    // Display CSS variables
+    function displayCSSVariables() {
+      try {
+        const cssVarsContainer = document.getElementById('cssVariables');
+        if (!cssVarsContainer) return;
+        
+        const style = window.getComputedStyle(document.documentElement);
+        let html = '<ul>';
+        
+        // Get all CSS variables
+        let cssVars = [];
+        for (let i = 0; i < style.length; i++) {
+          const prop = style[i];
+          if (prop.startsWith('--')) {
+            cssVars.push({
+              name: prop,
+              value: style.getPropertyValue(prop)
+            });
+          }
+        }
+        
+        // Filter for DaisyUI variables
+        const daisyVars = cssVars.filter(v => 
+          v.name === '--p' || v.name === '--s' || v.name === '--a' || 
+          v.name === '--n' || v.name === '--b1' || v.name === '--b2' ||
+          v.name === '--pc' || v.name === '--sc' || v.name === '--ac'
+        );
+        
+        // Add them to HTML
+        for (const v of daisyVars) {
+          html += `<li><strong>${v.name}</strong>: ${v.value}</li>`;
+        }
+        
+        html += '</ul>';
+        cssVarsContainer.innerHTML = html;
+        
+        // Status message
+        if (daisyVars.length === 0) {
+          cssVarsContainer.innerHTML = '<p class="text-error">No DaisyUI CSS variables found! DaisyUI may not be loaded correctly.</p>';
+        }
+      } catch (error) {
+        console.error('Error displaying CSS variables:', error);
+      }
+    }
+    
+    // Update theme display
+    function updateThemeDisplay() {
+      try {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'none';
+        const currentThemeElement = document.getElementById('currentTheme');
+        if (currentThemeElement) {
+          currentThemeElement.textContent = currentTheme;
+        }
+        displayCSSVariables();
+      } catch (error) {
+        console.error('Error updating theme display:', error);
+      }
+    }
+    
+    // Apply theme
+    function applyTheme(theme) {
+      try {
+        document.documentElement.setAttribute('data-theme', theme);
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('chat-theme', theme);
+        console.log(`Applied theme: ${theme}`);
+        updateThemeDisplay();
+      } catch (error) {
+        console.error('Error applying theme:', error);
+      }
+    }
+    
+    // Reset theme
+    function resetTheme() {
+      try {
+        document.documentElement.removeAttribute('data-theme');
+        document.body.removeAttribute('data-theme');
+        localStorage.removeItem('chat-theme');
+        console.log('Theme reset');
+        updateThemeDisplay();
+      } catch (error) {
+        console.error('Error resetting theme:', error);
+      }
+    }
+    
+    // Show current theme status
+    function showThemeStatus() {
+      try {
+        const htmlTheme = document.documentElement.getAttribute('data-theme');
+        const bodyTheme = document.body.getAttribute('data-theme');
+        const lsTheme = localStorage.getItem('chat-theme');
+        
+        alert(`Theme Status:
+HTML element: ${htmlTheme || 'none'}
+Body element: ${bodyTheme || 'none'}
+localStorage: ${lsTheme || 'none'}`);
+      } catch (error) {
+        console.error('Error showing theme status:', error);
+        alert('Error getting theme status: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html> 

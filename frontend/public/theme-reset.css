@@ -1,0 +1,53 @@
+/* DaisyUI Theme Reset CSS */
+@import url('https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.css');
+
+/* Force theme variables to be respected */
+:root[data-theme] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"],
+:root[data-theme="black"],
+:root[data-theme="luxury"],
+:root[data-theme="forest"],
+:root[data-theme="synthwave"],
+:root[data-theme="dracula"],
+:root[data-theme="business"],
+:root[data-theme="night"],
+:root[data-theme="dim"],
+:root[data-theme="sunset"] {
+  color-scheme: dark;
+}
+
+/* Ensure theme colors are applied */
+html[data-theme] {
+  background-color: hsl(var(--b2));
+  color: hsl(var(--bc));
+}
+
+/* Basic daisyUI theme selectors */
+.btn-primary {
+  background-color: hsl(var(--p)) !important;
+  border-color: hsl(var(--p)) !important;
+  color: hsl(var(--pc)) !important;
+}
+
+.btn-secondary {
+  background-color: hsl(var(--s)) !important;
+  border-color: hsl(var(--s)) !important;
+  color: hsl(var(--sc)) !important;
+}
+
+.btn-accent {
+  background-color: hsl(var(--a)) !important;
+  border-color: hsl(var(--a)) !important;
+  color: hsl(var(--ac)) !important;
+}
+
+.text-primary {
+  color: hsl(var(--p)) !important;
+}
+
+.bg-primary {
+  background-color: hsl(var(--p)) !important;
+} 
