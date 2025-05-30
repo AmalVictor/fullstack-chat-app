@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { axiosInstance } from "../lib/axios";
 
 const TranslateMessage = ({ original }) => {
   const { preferredLanguage } = useLanguage();
@@ -15,11 +16,10 @@ const TranslateMessage = ({ original }) => {
     try {
       console.log(`Translating to ${preferredLanguage}: "${original.substring(0, 30)}..."`);
       
-      const response = await fetch('http://localhost:5001/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: original, targetLang: preferredLanguage }),
-      });
+      const response = await axiosInstance.post("/translate", {
+                        text: original,
+                        targetLang: preferredLanguage,
+                      });
   
       const data = await response.json();
   
